@@ -53,7 +53,7 @@
 				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.metadata.json'))
 
 				for (var i = 0; i < metadata.buckets.length; i++) {
-					bucket = i < metadata.buckets.length ? '< ' + mmetadata.buckets[i+1] : '60+';
+					bucket = i < metadata.buckets.length ? '< ' + metadata.buckets[i+1] : '60+';
 					color = metadata.colors[i];
 					var div = document.createElement('div');
 					div.style["background-color"] = 'rgb(' + color.join(',') + ')';
