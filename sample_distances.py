@@ -35,44 +35,51 @@ TARGET = 'ETH Zurich Hauptgebaude, Ramistrasse 101, 8092 Zurich, Switzerland'
 _t_min = calendar.timegm(SAMPLING_DATE_MIN.utctimetuple())
 _t_max = calendar.timegm(SAMPLING_DATE_MAX.utctimetuple())
 
-# load Google Key
-with open('key') as key_file:
-    google_key = key_file.read().strip()
 
-for i in range(MAX_SAMPLES):
-    # Sample location
-    lat = MIN_LAT + random() * (MAX_LAT - MIN_LAT)
-    lon = MIN_LON + random() * (MAX_LON - MIN_LON)
+def start():
 
-    # Sample time
-    t = _t_min + int(random() * (_t_max - _t_min))
+    # load Google Key
+    with open('key') as key_file:
+        google_key = key_file.read().strip()
 
-    # Call Google Directions API
-    payload = {'mode': 'transit',
-               'origin': str(lat) + ',' + str(lon),
-               'destination' : TARGET,
-               'departure_time' : str(t),
-               'key' : google_key}
+    for i in range(MAX_SAMPLES):
+        # Sample location
+        lat = MIN_LAT + random() * (MAX_LAT - MIN_LAT)
+        lon = MIN_LON + random() * (MAX_LON - MIN_LON)
 
-    r = requests.get('https://maps.googleapis.com/maps/api/directions/json', params=payload)
-    result = r.json()
+        # Sample time
+        t = _t_min + int(random() * (_t_max - _t_min))
 
-    # Check result
-    if 'routes' in result and len(result['routes']) and \
-            'legs' in result['routes'][0] and len(result['routes'][0]):
-        travel_time = result['routes'][0]['legs'][0]['duration']['value']
-    else:
-        # For debug purposes only
-        travel_time = None
-        print payload
-        print result
+        # Call Google Directions API
+        payload = {'mode': 'transit',
+                   'origin': str(lat) + ',' + str(lon),
+                   'destination' : TARGET,
+                   'departure_time' : str(t),
+                   'key' : google_key}
 
-    # Save log
-    if travel_time is not None:
-        line = str(lat) + ',' + str(lon) + '\t' + str(t) + '\t' + str(travel_time) + '\n'
-        with open('samples.txt', 'a') as sample_file:
-            sample_file.write(line)
-        print line
+        r = requests.get('https://maps.googleapis.com/maps/api/directions/json', params=payload)
+        result = r.json()
 
-    # Sleep a bit cause we cannot make too many requests per second
-    sleep(1.0 / MAX_PER_SECOND)
+        # Check result
+        if 'routes' in result and len(result['routes']) and \
+                'legs' in result['routes'][0] and len(result['routes'][0]):
+            travel_time = result['routes'][0]['legs'][0]['duration']['value']
+        else:
+            # For debug purposes only
+            travel_time = None
+            print payload
+            print result
+
+        # Save log
+        if travel_time is not None:
+            line = str(lat) + ',' + str(lon) + '\t' + str(t) + '\t' + str(travel_time) + '\n'
+            with open('samples.txt', 'a') as sample_file:
+                sample_file.write(line)
+            print line
+
+        # Sleep a bit cause we cannot make too many requests per second
+        sleep(1.0 / MAX_PER_SECOND)
+
+
+if __name__ == "__main__":
+    start()
