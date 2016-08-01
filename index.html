@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <title>Dheatmap by marcoancona</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-
+		<style>
+			html, body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			#map {
+				height: 100%;
+			}
+		</style>
 		<!-- Change the key with your own! -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script>
     <script>
@@ -27,8 +35,8 @@
 
       function initMap() {
         var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 11,
-          center: {lat: 47.38, lng: 8.50},
+          zoom: 14,
+          center: {lat: 47.38, lng: 8.54},
           mapTypeId: 'roadmap'
         });
 
@@ -79,6 +87,7 @@
         img.style.width = '100%';
         img.style.height = '100%';
         img.style.position = 'absolute';
+				img.style.opacity = '0.6';
         div.appendChild(img);
 
         this.div_ = div;
