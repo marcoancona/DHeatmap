@@ -49,14 +49,16 @@
 					});
 
 				var legend = document.getElementById('legend');
-				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.json'))
+				legend.style.margin = '5px'
+				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.metadata.json'))
 
-				for (var key in icons) {
-					var type = icons[key];
-					var name = type.name;
-					var icon = type.icon;
+				for (var i = 0; i < metadata.buckets.length - 1; i++) {
+					bucket = metadata.buckets[i];
+					color = metadata.colors[i];
 					var div = document.createElement('div');
-					div.innerHTML = '<img src="' + icon + '"> ' + name;
+					console.log(color);
+					div.style["background-color"] = 'rgb(' + color.join(',') + ')';
+					div.innerHTML = '<' + bucket + ' min';
 					legend.appendChild(div);
 				}
 
