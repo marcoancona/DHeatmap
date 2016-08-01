@@ -17,7 +17,8 @@
 		</style>
 		<!-- Change the key with your own! -->
 		<!-- Public key only working on marcoancona.github.io: AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ -->
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script>
+		<script src="https://maps.googleapis.com/maps/api/js"></script>
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script> -->
 		<script>
 			// This example creates a custom overlay called USGSOverlay, containing
 			// a U.S. Geological Survey (USGS) image of the relevant area on the map.
@@ -47,6 +48,20 @@
 						title: 'ETH Zurich'
 					});
 
+				var legend = document.getElementById('legend');
+				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.json'))
+
+				for (var key in icons) {
+					var type = icons[key];
+					var name = type.name;
+					var icon = type.icon;
+					var div = document.createElement('div');
+					div.innerHTML = '<img src="' + icon + '"> ' + name;
+					legend.appendChild(div);
+				}
+
+				map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
 				var bounds = new google.maps.LatLngBounds(
 						new google.maps.LatLng(47.348825982085685, 8.438186645507812),
 						new google.maps.LatLng(47.438538059325126, 8.599891662597656));
@@ -60,6 +75,12 @@
 				overlay = new USGSOverlay(bounds, srcImage, map);
 			}
 
+			function getUrl (url) {
+				var Httpreq = new XMLHttpRequest(); // a new request
+				Httpreq.open("GET", url, false);
+				Httpreq.send(null);
+				return Httpreq.responseText;
+			}
 			/** @constructor */
 			function USGSOverlay(bounds, image, map) {
 
@@ -137,6 +158,7 @@
 	</head>
 	<body>
 		<div id="map"></div>
+		<div id="legend"><h3>Legend</h3></div>
 		<footer class="site-footer">
 			<span class="site-footer-owner"><a href="https://github.com/marcoancona/DHeatmap">Dheatmap</a> is maintained by <a href="https://github.com/marcoancona">marcoancona</a>.</span>
 		</footer>
