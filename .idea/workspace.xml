@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ca37d4a9-dd50-46b3-b69a-8553538f2105" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sample_distances.py" afterPath="$PROJECT_DIR$/sample_distances.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/samples.txt" afterPath="$PROJECT_DIR$/samples.txt" />
-    </list>
+    <list default="true" id="ca37d4a9-dd50-46b3-b69a-8553538f2105" name="Default" comment="" />
     <ignored path="DHeatmap.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -63,7 +60,7 @@
         <entry file="file://$PROJECT_DIR$/map.html">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="240">
-              <caret line="16" column="61" selection-start-line="16" selection-start-column="61" selection-end-line="16" selection-end-column="61" />
+              <caret line="16" column="30" selection-start-line="0" selection-start-column="0" selection-end-line="130" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -572,7 +569,7 @@
     <entry file="file://$PROJECT_DIR$/map.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="240">
-          <caret line="16" column="61" selection-start-line="16" selection-start-column="61" selection-end-line="16" selection-end-column="61" />
+          <caret line="16" column="30" selection-start-line="0" selection-start-column="0" selection-end-line="130" selection-end-column="7" />
           <folding />
         </state>
       </provider>
