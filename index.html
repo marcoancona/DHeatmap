@@ -52,13 +52,12 @@
 				legend.style.margin = '5px'
 				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.metadata.json'))
 
-				for (var i = 0; i < metadata.buckets.length - 1; i++) {
-					bucket = metadata.buckets[i];
+				for (var i = 0; i < metadata.buckets.length; i++) {
+					bucket = i < metadata.buckets.length ? '< ' + mmetadata.buckets[i+1] : '60+';
 					color = metadata.colors[i];
 					var div = document.createElement('div');
-					console.log(color);
 					div.style["background-color"] = 'rgb(' + color.join(',') + ')';
-					div.innerHTML = '<' + bucket + ' min';
+					div.innerHTML = bucket + ' min';
 					legend.appendChild(div);
 				}
 
