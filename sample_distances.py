@@ -8,6 +8,7 @@ import calendar
 from time import sleep
 from datetime import datetime
 from random import random
+import numpy as np
 
 """
 Samples locations within a given area and queries Google Directions API
@@ -23,6 +24,7 @@ MIN_LON = 8.438186645507812
 MAX_LON = 8.599891662597656
 
 MAX_SAMPLES = 2400  # 2500 free daily call to Direction APIs
+SAMPLES_PER_LOCATION = 3  # how many times to sample the same spot
 MAX_PER_SECOND = 40  # max is actually 50/second but keep safe
 
 # Define a date and time-range for sampling travel distance (UTC)
@@ -42,38 +44,52 @@ def start():
     with open('key') as key_file:
         google_key = key_file.read().strip()
 
-    for i in range(MAX_SAMPLES):
+    for i in range(MAX_SAMPLES // SAMPLES_PER_LOCATION):
         # Sample location
         lat = MIN_LAT + random() * (MAX_LAT - MIN_LAT)
         lon = MIN_LON + random() * (MAX_LON - MIN_LON)
 
-        # Sample time
-        t = _t_min + int(random() * (_t_max - _t_min))
+        avg_result = []
+        for j in range(SAMPLES_PER_LOCATION):
 
-        # Call Google Directions API
-        payload = {'mode': 'transit',
-                   'origin': str(lat) + ',' + str(lon),
-                   'destination' : TARGET,
-                   'departure_time' : str(t),
-                   'key' : google_key}
+            # Sample time
+            t = _t_min + int(random() * (_t_max - _t_min))
 
-        r = requests.get('https://maps.googleapis.com/maps/api/directions/json', params=payload)
-        result = r.json()
+            # Call Google Directions API
+            payload = {'mode': 'transit',
+                    'origin': str(lat) + ',' + str(lon),
+                    'destination' : TARGET,
+                    'departure_time' : str(t),
+                    'key' : google_key}
 
-        # Check result
-        if 'routes' in result and len(result['routes']) and \
-                'legs' in result['routes'][0] and len(result['routes'][0]):
-            travel_time = result['routes'][0]['legs'][0]['duration']['value']
-        else:
-            # For debug purposes only
-            travel_time = None
-            print payload
-            print result
+            r = requests.get('https://maps.googleapis.com/maps/api/directions/json', params=payload)
+            result = r.json()
+
+            # Check result
+            if 'routes' in result and len(result['routes']) and \
+                    'legs' in result['routes'][0] and len(result['routes'][0]):
+                # Travel time is time according to google (assuming we leave at right time)
+                travel_time = result['routes'][0]['legs'][0]['duration']['value']
+                # Random time is time leaving exactly at the sampled departure time
+                # Not present when target is in walking distance
+                if 'arrival_time' in result['routes'][0]['legs'][0]:
+                    random_time = result['routes'][0]['legs'][0]['arrival_time']['value'] - t
+                else:
+                    random_time = travel_time
+                # Distance
+                distance = result['routes'][0]['legs'][0]['distance']['value']
+                avg_result.append((travel_time, random_time, distance))
+            else:
+                # For debug purposes only
+                travel_time = None
+                print payload
+                print result
 
         # Save log
-        if travel_time is not None:
-            line = str(lat) + ',' + str(lon) + '\t' + str(t) + '\t' + str(travel_time) + '\n'
-            with open('samples.txt', 'a') as sample_file:
+        if len(avg_result) > 0:
+            t_time, r_time, d = np.mean(avg_result, 0)
+            line = str(lat) + ',' + str(lon) + '\t' + str(t_time) + '\t' + str(r_time) + '\t' + str(d) + '\n'
+            with open('samples_exp.txt', 'a') as sample_file:
                 sample_file.write(line)
             print line
 

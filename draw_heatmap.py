@@ -7,7 +7,7 @@ import numpy as np
 from scipy.interpolate import griddata
 
 # Set boundaries in sample_distances.py
-from sample_distances import MAX_LAT, MAX_LON, MIN_LAT, MIN_LON
+from sample_distances import MAX_LAT, MAX_LON, MIN_LAT, MIN_LON, TARGET
 
 # Define image resolution (eg. 1000x1000 is good, but very slow)
 MAX_X = 1000
@@ -38,8 +38,10 @@ buckets.reverse()
 def ll_to_01(lat, lon):
     return np.array([(lon - MIN_LON) / (MAX_LON - MIN_LON), 1.0 - (lat - MIN_LAT) / (MAX_LAT - MIN_LAT)])
 
+
 def ll_to_pixel(lat, lon):
     return (ll_to_01(lat, lon) * [MAX_X, MAX_Y]).astype(np.int32)
+
 
 def load_data(sample_file):
     raw = []
@@ -48,8 +50,8 @@ def load_data(sample_file):
             if not len(line.strip()):
                 continue
 
-            lat, lon, timestamp, time = re.split(r'\t|,', line.strip())
-            raw.append((float(time) / 60.0, float(lat), float(lon)))
+            lat, lon, time, r_time, _ = re.split(r'\t|,', line.strip())
+            raw.append((float(time) / 60.0, float(r_time) / 60.0, float(lat), float(lon)))
     return raw
 
 
@@ -63,22 +65,16 @@ def color(val, buckets):
     return 0, 0, 0, 0
 
 
-def start(file_name):
-    print "Loading data..."
-    all_data = load_data(file_name)
-    n_val = int(len(all_data) * 0.1)
-    train = all_data[n_val:]
-    val = all_data[:n_val]
-
-    print "Interpolating..."
+def compute_map(data, val_data, name):
+    print "Interpolating " + name + '...'
     grid_x, grid_y = np.mgrid[0:MAX_X, 0:MAX_Y]
-    points = np.array([ll_to_pixel(lat, lon) for _, lat, lon in train])
-    values = np.array([v for v, _, _ in train])
+    points = np.array([ll_to_pixel(lat, lon) for _, lat, lon in data])
+    values = np.array([v for v, _, _ in data])
     grid = griddata(points, values, (grid_x, grid_y), method='linear')
 
     # Validate
     error = []
-    for gt, lat, lon in val:
+    for gt, lat, lon in val_data:
         x, y = ll_to_pixel(lat, lon)
         z = grid[x, y]
         if not np.isnan(z):
@@ -95,19 +91,34 @@ def start(file_name):
             IM[x, y] = color(grid[x, y], buckets)
 
     if DRAW_DOTS:
-        for _, lat, lon in all_data:
+        for _, lat, lon in data:
             x, y = ll_to_pixel(lat, lon)
             IM[int(x), int(y)] = (0, 0, 0)
 
     out_fname = str(MAX_X)
-    I.save(out_fname + ".png", "PNG")
-    with open(out_fname + ".metadata.json", "w") as outf:
+    I.save(out_fname + "." + name + ".png", "PNG")
+    with open(out_fname + "." + name + ".metadata.json", "w") as outf:
         outf.write(json.dumps({
             "buckets": buckets,
             "colors": colors,
             "rmse" : rmse,
-            "n": len(train)}))
+            "target" : TARGET,
+            "n": len(data)}))
 
+
+def start(file_name):
+    print "Loading data..."
+    assert(len(buckets) == len(colors))
+    all_data = load_data(file_name)
+    n_val = int(len(all_data) * 0.1)
+    train = all_data[n_val:]
+    val = all_data[:n_val]
+
+    # Compute best travel time heatmat
+    compute_map([(t[0], t[2], t[3]) for t in train], [(t[0], t[2], t[3]) for t in val], 'best')
+
+    # Compute random departure travel time heatmat
+    compute_map([(t[1], t[2], t[3]) for t in train], [(t[1], t[2], t[3]) for t in val], 'random')
 
 if __name__ == "__main__":
-    start('samples.txt')
+    start('samples_exp.txt')
