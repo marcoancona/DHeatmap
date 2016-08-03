@@ -23,9 +23,9 @@ MAX_LAT = 47.438538059325126
 MIN_LON = 8.438186645507812
 MAX_LON = 8.599891662597656
 
-MAX_SAMPLES = 2400  # 2500 free daily call to Direction APIs
+MAX_SAMPLES = 2500  # 2500 free daily call to Direction APIs
 SAMPLES_PER_LOCATION = 3  # how many times to sample the same spot
-MAX_PER_SECOND = 40  # max is actually 50/second but keep safe
+MAX_PER_SECOND = 50  # max is actually 50/second but keep safe
 
 # Define a date and time-range for sampling travel distance (UTC)
 SAMPLING_DATE_MIN = datetime(2016, 9, 1, hour=6)
