@@ -18,8 +18,8 @@
 		</style>
 		<!-- Change the key with your own! -->
 		<!-- Public key only working on marcoancona.github.io: AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ -->
-		<script src="https://maps.googleapis.com/maps/api/js"></script>
-		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script> -->
+		<!-- <script src="https://maps.googleapis.com/maps/api/js"></script> -->
+		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script>
 		<script>
 			// This example creates a custom overlay called USGSOverlay, containing
 			// a U.S. Geological Survey (USGS) image of the relevant area on the map.
@@ -34,8 +34,18 @@
 			var overlay;
 			USGSOverlay.prototype = new google.maps.OverlayView();
 
-			// Initialize the map and the custom overlay.
+			// Load images
+			var srcImageBest = 'https://marcoancona.github.io/DHeatmap/' +
+					'1000.best.png';
+			var srcImageRandom = 'https://marcoancona.github.io/DHeatmap/' +
+					'1000.random.png';
 
+			function toMode(m) {
+				var imgHeatmap = document.getElementById('heatmap');
+				imgHeatmap.src = m == 1 ? srcImageBest : srcImageRandom;
+			}
+
+			// Initialize the map and the custom overlay.
 			function initMap() {
 				var map = new google.maps.Map(document.getElementById('map'), {
 					zoom: 14,
@@ -51,7 +61,7 @@
 
 				var legend = document.getElementById('legend');
 				legend.style.margin = '5px'
-				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.metadata.json'))
+				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.best.metadata.json'))
 
 				for (var i = 0; i < metadata.buckets.length; i++) {
 					bucket = i > 0 ? '< ' + metadata.buckets[i-1] : '60+';
@@ -65,21 +75,16 @@
 				map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 
 				// Mode switch
-				var legend = document.getElementById('mode');
-				map.controls[google.maps.ControlPosition.TOP_LEFT].push(legend);
-
+				var modeSwitch = document.getElementById('mode');
+				map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSwitch);
 
 				var bounds = new google.maps.LatLngBounds(
 						new google.maps.LatLng(47.348825982085685, 8.438186645507812),
 						new google.maps.LatLng(47.438538059325126, 8.599891662597656));
 
-				// The photograph is courtesy of the U.S. Geological Survey.
-				var srcImage = 'https://marcoancona.github.io/DHeatmap/' +
-						'1000.png';
-
 				// The custom USGSOverlay object contains the USGS image,
 				// the bounds of the image, and a reference to the map.
-				overlay = new USGSOverlay(bounds, srcImage, map);
+				overlay = new USGSOverlay(bounds, srcImageBest, map);
 			}
 
 			function getUrl (url) {
@@ -118,6 +123,7 @@
 
 				// Create the img element and attach it to the div.
 				var img = document.createElement('img');
+				img.id = 'heatmap';
 				img.src = this.image_;
 				img.style.width = '100%';
 				img.style.height = '100%';
@@ -168,9 +174,9 @@
 		<div id="legend"><h3>Legend</h3></div>
 		<div id="mode">
 			<nav class="segmented-button">
-				<input type="radio" name="seg-1" value="Best" id="seg-best" checked="checked">
+				<input type="radio" name="seg-1" value="Best" id="seg-best" onclick="toMode(1)" checked="checked">
 				<label for="seg-best">Best departure</label>
-				<input type="radio" name="seg-1" value="Random" id="seg-random">
+				<input type="radio" name="seg-1" value="Random" id="seg-random" onclick="toMode(2)">
 				<label for="seg-random">Random departure</label>
 			</nav>
 		</div>
