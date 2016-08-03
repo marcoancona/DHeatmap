@@ -5,6 +5,7 @@
 		<title>Dheatmap by marcoancona</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="stylesheets/stylesheet.css">
 		<style>
 			html, body {
 				height: 100%;
@@ -17,8 +18,8 @@
 		</style>
 		<!-- Change the key with your own! -->
 		<!-- Public key only working on marcoancona.github.io: AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ -->
-		<!-- <script src="https://maps.googleapis.com/maps/api/js"></script> -->
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script>
+		<script src="https://maps.googleapis.com/maps/api/js"></script>
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script> -->
 		<script>
 			// This example creates a custom overlay called USGSOverlay, containing
 			// a U.S. Geological Survey (USGS) image of the relevant area on the map.
@@ -62,6 +63,11 @@
 				}
 
 				map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
+				// Mode switch
+				var legend = document.getElementById('mode');
+				map.controls[google.maps.ControlPosition.TOP_LEFT].push(legend);
+
 
 				var bounds = new google.maps.LatLngBounds(
 						new google.maps.LatLng(47.348825982085685, 8.438186645507812),
@@ -160,6 +166,14 @@
 	<body>
 		<div id="map"></div>
 		<div id="legend"><h3>Legend</h3></div>
+		<div id="mode">
+			<nav class="segmented-button">
+				<input type="radio" name="seg-1" value="Best" id="seg-best" checked="checked">
+				<label for="seg-best">Best departure</label>
+				<input type="radio" name="seg-1" value="Random" id="seg-random">
+				<label for="seg-random">Random departure</label>
+			</nav>
+		</div>
 		<footer class="site-footer">
 			<span class="site-footer-owner"><a href="https://github.com/marcoancona/DHeatmap">Dheatmap</a> is maintained by <a href="https://github.com/marcoancona">marcoancona</a>.</span>
 		</footer>
