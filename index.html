@@ -16,29 +16,22 @@
 				height: 100%;
 			}
 		</style>
-		<!-- Change the key with your own! -->
+		<!-- Change the key with your own! Use without key for local testing. -->
 		<!-- Public key only working on marcoancona.github.io: AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ -->
-		<!-- <script src="https://maps.googleapis.com/maps/api/js"></script> -->
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script>
+		<script src="https://maps.googleapis.com/maps/api/js"></script>
+		<!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ"></script> -->
 		<script>
-			// This example creates a custom overlay called USGSOverlay, containing
-			// a U.S. Geological Survey (USGS) image of the relevant area on the map.
-
-			// Set the custom overlay object's prototype to a new instance
-			// of OverlayView. In effect, this will subclass the overlay class therefore
-			// it's simpler to load the API synchronously, using
-			// google.maps.event.addDomListener().
-			// Note that we set the prototype to an instance, rather than the
-			// parent class itself, because we do not wish to modify the parent class.
+			// This example creates a custom overlay called USGSOverlay
 
 			var overlay;
 			USGSOverlay.prototype = new google.maps.OverlayView();
 
 			// Load images
-			var srcImageBest = 'https://marcoancona.github.io/DHeatmap/' +
-					'1000.best.png';
-			var srcImageRandom = 'https://marcoancona.github.io/DHeatmap/' +
-					'1000.random.png';
+			var path = 'https://marcoancona.github.io/DHeatmap/example_zurich/'
+			var srcImageBest =  path + '500.best.png';
+			var srcImageRandom = path + '500.random.png';
+			var srcMetadataBest = path + '500.best.metadata.json';
+			var srcMetadataRandom = path + '500.random.metadata.json';
 
 			function toMode(m) {
 				var imgHeatmap = document.getElementById('heatmap');
@@ -47,40 +40,49 @@
 
 			// Initialize the map and the custom overlay.
 			function initMap() {
+				// Load metadata
+				var metadata = JSON.parse(getUrl(srcMetadataBest));
+				c_lat = (metadata['min_lat'] + metadata['max_lat']) * 0.5;
+				c_lon = (metadata['min_lon'] + metadata['max_lon']) * 0.5;
+
+				// Init map
 				var map = new google.maps.Map(document.getElementById('map'), {
 					zoom: 14,
-					center: {lat: 47.38, lng: 8.54},
+					center: {lat: c_lat, lng: c_lon},
 					mapTypeId: 'roadmap'
 				});
 
+				// Create marker of target location (optional)
 				var marker = new google.maps.Marker({
 						position: {lat: 47.376536, lng: 8.548093},
 						map: map,
 						title: 'ETH Zurich'
 					});
 
+				// Create a very minimal legend
 				var legend = document.getElementById('legend');
 				legend.style.margin = '5px'
-				var metadata = JSON.parse(getUrl('https://marcoancona.github.io/DHeatmap/1000.best.metadata.json'))
+				lagend.style.padding = '1px'
 
 				for (var i = 0; i < metadata.buckets.length; i++) {
-					bucket = i > 0 ? '< ' + metadata.buckets[i-1] : '60+';
+					bucket = i > 0 ? metadata.buckets[i-1] + ' - ' + metadata.buckets[i] : '60+';
 					color = metadata.colors[i];
 					var div = document.createElement('div');
 					div.style["background-color"] = 'rgb(' + color.join(',') + ')';
-					div.innerHTML = bucket + ' min';
+					div.innerHTML = bucket;
 					legend.appendChild(div);
 				}
-
 				map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
 
-				// Mode switch
+				// Create mode switch
 				var modeSwitch = document.getElementById('mode');
 				map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSwitch);
 
+				// Set overlay position
 				var bounds = new google.maps.LatLngBounds(
-						new google.maps.LatLng(47.348825982085685, 8.438186645507812),
-						new google.maps.LatLng(47.438538059325126, 8.599891662597656));
+						new google.maps.LatLng(metadata['min_lat'], metadata['min_lon']),
+						new google.maps.LatLng(metadata['max_lat'], metadata['max_lon'])
+					);
 
 				// The custom USGSOverlay object contains the USGS image,
 				// the bounds of the image, and a reference to the map.
@@ -171,13 +173,13 @@
 	</head>
 	<body>
 		<div id="map"></div>
-		<div id="legend"><h3>Legend</h3></div>
-		<div id="mode">
+		<div id="legend"><h3>Travel time (min)</h3></div>
+		<div id="mode"> Departure
 			<nav class="segmented-button">
 				<input type="radio" name="seg-1" value="Best" id="seg-best" onclick="toMode(1)" checked="checked">
-				<label for="seg-best">Best departure</label>
+				<label for="seg-best">Best</label>
 				<input type="radio" name="seg-1" value="Random" id="seg-random" onclick="toMode(2)">
-				<label for="seg-random">Random departure</label>
+				<label for="seg-random">Random</label>
 			</nav>
 		</div>
 		<footer class="site-footer">
