@@ -1,6 +1,6 @@
 # DHeatmap
-Simple script to sample commute time from [Google Directions API](https://developers.google.com/maps/documentation/directions/) from a given target address.
-These samples are then interpolated to generate a dense heatmap that can be overlap to Google Maps. For an example see [commute time from ETH, Zurich](https://marcoancona.github.io/DHeatmap/)
+Simple script to sample commute time from [Google Directions API](https://developers.google.com/maps/documentation/directions/) given target address.
+These samples are then interpolated to generate a dense commute time heatmap that can be overlap to any map, eg. Google Maps. For an example see [commute time to ETH, Zurich](https://marcoancona.github.io/DHeatmap/)
 
 ## Usage
 
@@ -14,11 +14,13 @@ These samples are then interpolated to generate a dense heatmap that can be over
 
 ## Samples
 By default this script samples random locations within a given area and provide commute time with public transport. Each location is sampled 3 times at different random times between 8AM and 8PM.
-Two different figures are generated:
+Two different set of figures are generated:
 
--`best`: the mean commute time assuming the departure is at the best time to avoid waiting for public means.
+-`best`: the mean commute time assuming the departure is at the best time to avoid waiting for a bus, tram or train at its stop.
 
--`random`: the mean commute time assuming departure at random time.
+-`random`: the mean commute time assuming departure at random time, ie. leaving from home without taking into account a timetable.
+
+Areas served by fast but low-frequency means of transportation are those where the difference between the two metric is more evident.
 
 
 ## Integration in Google Maps
