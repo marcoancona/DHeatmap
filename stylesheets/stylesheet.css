@@ -17,7 +17,7 @@ html, body {
 }
 
 .segmented-button {
-	padding: 11px;
+	padding-top: 11px;
 }
 .segmented-button input[type="radio"] {
 	width: 0px;
