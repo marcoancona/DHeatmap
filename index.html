@@ -6,16 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="stylesheets/stylesheet.css">
-		<style>
-			html, body {
-				height: 100%;
-				margin: 0;
-				padding: 0;
-			}
-			#map {
-				height: 100%;
-			}
-		</style>
 		<!-- Change the key with your own! Use without key for local testing. -->
 		<!-- Public key only working on marcoancona.github.io: AIzaSyBoWz0asV3T_E8cXevq2SauTkhWJpYyWnQ -->
 		<script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -27,11 +17,11 @@
 			USGSOverlay.prototype = new google.maps.OverlayView();
 
 			// Load images
-			var path = 'https://marcoancona.github.io/DHeatmap/example_zurich/'
-			var srcImageBest =  path + '500.best.png';
-			var srcImageRandom = path + '500.random.png';
-			var srcMetadataBest = path + '500.best.metadata.json';
-			var srcMetadataRandom = path + '500.random.metadata.json';
+			var path = 'https://marcoancona.github.io/DHeatmap/data/'
+			var srcImageBest =  path + 'best.png';
+			var srcImageRandom = path + 'random.png';
+			var srcMetadataBest = path + 'best.metadata.json';
+			var srcMetadataRandom = path + 'random.metadata.json';
 
 			function toMode(m) {
 				var imgHeatmap = document.getElementById('heatmap');
@@ -61,14 +51,15 @@
 
 				// Create a very minimal legend
 				var legend = document.getElementById('legend');
-				legend.style.margin = '5px'
-				lagend.style.padding = '1px'
+				legend.style.margin = '5px';
 
 				for (var i = 0; i < metadata.buckets.length; i++) {
-					bucket = i > 0 ? metadata.buckets[i-1] + ' - ' + metadata.buckets[i] : '60+';
+					bucket = i > 0 ? metadata.buckets[i] + ' - ' + metadata.buckets[i - 1] : '60+';
 					color = metadata.colors[i];
 					var div = document.createElement('div');
 					div.style["background-color"] = 'rgb(' + color.join(',') + ')';
+					div.style["padding-right"] = '2px';
+					div.style["padding-left"] = '2px';
 					div.innerHTML = bucket;
 					legend.appendChild(div);
 				}
@@ -173,8 +164,8 @@
 	</head>
 	<body>
 		<div id="map"></div>
-		<div id="legend"><h3>Travel time (min)</h3></div>
-		<div id="mode"> Departure
+		<div id="legend">Time <br>(min)</div>
+		<div id="mode">
 			<nav class="segmented-button">
 				<input type="radio" name="seg-1" value="Best" id="seg-best" onclick="toMode(1)" checked="checked">
 				<label for="seg-best">Best</label>
@@ -182,8 +173,5 @@
 				<label for="seg-random">Random</label>
 			</nav>
 		</div>
-		<footer class="site-footer">
-			<span class="site-footer-owner"><a href="https://github.com/marcoancona/DHeatmap">Dheatmap</a> is maintained by <a href="https://github.com/marcoancona">marcoancona</a>.</span>
-		</footer>
 	</body>
 </html>
