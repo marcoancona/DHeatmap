@@ -18,7 +18,7 @@ Two different set of figures are generated:
 
 -`best`: the mean commute time assuming the departure is at the best time to avoid waiting for a bus, tram or train at its stop.
 
--`random`: the mean commute time assuming departure at random time, ie. leaving from home without taking into account a timetable.
+-`random`: the mean commute time assuming departure at random time, ie. leaving from home without taking into account the public transport timetable.
 
 Areas served by fast but low-frequency means of transportation are those where the difference between the two metric is more evident.
 
