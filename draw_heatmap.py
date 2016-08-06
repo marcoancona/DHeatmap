@@ -10,8 +10,8 @@ from scipy.interpolate import griddata
 from sample_distances import MAX_LAT, MAX_LON, MIN_LAT, MIN_LON, TARGET
 
 # Define image resolution
-MAX_X = 500
-MAX_Y = 500
+MAX_X = 2000
+MAX_Y = 2000
 
 DRAW_DOTS = False
 
@@ -94,9 +94,8 @@ def compute_map(data, val_data, name):
             x, y = ll_to_pixel(lat, lon)
             IM[int(x), int(y)] = (0, 0, 0)
 
-    out_fname = str(MAX_X)
-    I.save(out_fname + "." + name + ".png", "PNG")
-    with open(out_fname + "." + name + ".metadata.json", "w") as outf:
+    I.save(name + ".png", "PNG")
+    with open(name + ".metadata.json", "w") as outf:
         outf.write(json.dumps({
             "buckets": buckets,
             "colors": colors,
