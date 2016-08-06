@@ -18,12 +18,12 @@ exists in the root directory.
 """
 
 # Zurich area
-MIN_LAT = 47.348825982085685
-MAX_LAT = 47.438538059325126
-MIN_LON = 8.438186645507812
-MAX_LON = 8.599891662597656
+MIN_LAT = 47.340
+MAX_LAT = 47.440
+MIN_LON = 8.435
+MAX_LON = 8.600
 
-MAX_SAMPLES = 2500  # 2500 free daily call to Direction APIs
+MAX_SAMPLES = 2700  # 2500 free daily call to Direction APIs
 SAMPLES_PER_LOCATION = 3  # how many times to sample the same spot
 MAX_PER_SECOND = 50  # max is actually 50/second but keep safe
 
@@ -89,7 +89,7 @@ def start():
         if len(avg_result) > 0:
             t_time, r_time, d = np.mean(avg_result, 0)
             line = str(lat) + ',' + str(lon) + '\t' + str(t_time) + '\t' + str(r_time) + '\t' + str(d) + '\n'
-            with open('samples_exp.txt', 'a') as sample_file:
+            with open('samples.txt', 'a') as sample_file:
                 sample_file.write(line)
             print line
 

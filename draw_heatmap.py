@@ -9,11 +9,11 @@ from scipy.interpolate import griddata
 # Set boundaries in sample_distances.py
 from sample_distances import MAX_LAT, MAX_LON, MIN_LAT, MIN_LON, TARGET
 
-# Define image resolution (eg. 1000x1000 is good, but very slow)
-MAX_X = 1000
-MAX_Y = 1000
+# Define image resolution
+MAX_X = 500
+MAX_Y = 500
 
-DRAW_DOTS = True
+DRAW_DOTS = False
 
 colors = [
     (255, 0, 0),
@@ -55,13 +55,12 @@ def load_data(sample_file):
     return raw
 
 
-def color(val, buckets):
+def color(val):
     if val is None:
         return 0, 0, 0, 0
-
-    for threshold, color in zip(buckets, colors):
+    for threshold, col in zip(buckets, colors):
         if val > threshold:
-            return color
+            return col
     return 0, 0, 0, 0
 
 
@@ -78,7 +77,7 @@ def compute_map(data, val_data, name):
         x, y = ll_to_pixel(lat, lon)
         z = grid[x, y]
         if not np.isnan(z):
-            # Some points are out of interpolation area. Exclude those.
+            # Some points are out of interpolated area. Ignore those.
             error.append((gt - grid[x, y]) ** 2)
     rmse = np.sqrt(np.mean(error))
     print 'RMSE (min): %.2f' % rmse
@@ -88,7 +87,7 @@ def compute_map(data, val_data, name):
     IM = I.load()
     for x in range(MAX_X):
         for y in range(MAX_Y):
-            IM[x, y] = color(grid[x, y], buckets)
+            IM[x, y] = color(grid[x, y])
 
     if DRAW_DOTS:
         for _, lat, lon in data:
@@ -103,6 +102,10 @@ def compute_map(data, val_data, name):
             "colors": colors,
             "rmse" : rmse,
             "target" : TARGET,
+            "min_lat" : MIN_LAT,
+            "max_lat": MAX_LAT,
+            "min_lon": MIN_LON,
+            "max_lon": MAX_LON,
             "n": len(data)}))
 
 
@@ -110,9 +113,11 @@ def start(file_name):
     print "Loading data..."
     assert(len(buckets) == len(colors))
     all_data = load_data(file_name)
+    # Use 10% of points to validate the result
     n_val = int(len(all_data) * 0.1)
     train = all_data[n_val:]
     val = all_data[:n_val]
+    print 'Using %d points for interpolation and %d for validation' % (len(train), len(val))
 
     # Compute best travel time heatmat
     compute_map([(t[0], t[2], t[3]) for t in train], [(t[0], t[2], t[3]) for t in val], 'best')
@@ -121,4 +126,4 @@ def start(file_name):
     compute_map([(t[1], t[2], t[3]) for t in train], [(t[1], t[2], t[3]) for t in val], 'random')
 
 if __name__ == "__main__":
-    start('samples_exp.txt')
+    start('samples.txt')
