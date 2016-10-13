@@ -1,2 +1,4 @@
 key
 .idea/
+*.pyc
+
